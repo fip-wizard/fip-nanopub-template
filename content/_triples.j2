@@ -1,0 +1,105 @@
+{%- import "content/_definition.j2" as def with context -%}
+{%- set km = ctx.knowledgeModel -%}
+{%- set replies = ctx.questionnaireReplies -%}
+
+{%- set declarations = [] -%}
+
+{%- set communityReply = replies[def.communityPath] -%}
+{%- if communityReply -%}
+  {%- set reply = communityReply.value -%}
+  {%- set communityUri = [] -%}
+  {%- set communityQuestion = km.entities.questions[def.communityUuid] -%}
+  {%- if reply.type == "PlainValue" and reply.value -%}
+    {%- do communityUri.append(reply.value) -%}
+  {%- elif reply.id -%}
+    {%- set integration = km.entities.integrations[communityQuestion.integrationUuid] -%}
+    {%- do communityUri.append(integration.itemUrl|replace("${id}", reply.id)) -%}
+  {%- endif -%}
+{%- endif -%}
+{%- set orcid = replies[def.orcidPath]|reply_str_value -%}
+
+{%- for q in def.questions -%}
+  {%- set dquestion = km.entities.questions[q["declaration"]] -%}
+
+  {%- set declarationsPath = [q["chapter"], q["declaration"]]|reply_path -%}
+  {%- set declarationItems = replies[declarationsPath]|reply_items -%}
+  {%- for declarationUuid in declarationItems -%}
+    {#- Comment with question text -#}
+    {%- set triples = [] -%}
+    {%- do triples.append([dquestion.title]) -%}
+    {%- set node = ":declaration" -%}
+    {%- set declarationPath = [declarationsPath, declarationUuid]|reply_path -%}
+    {#- It is a declaration -#}
+    {%- do triples.append([node, "a", "fip:FIP-Declaration"]) -%}
+    {#- It related to FIP question -#}
+    {%- do triples.append([node, "fip:refers-to-question", "<" ~ q["purl"] ~ ">"]) -%}
+    {#- Community making the declaration -#}
+    {%- if communityUri|length > 0 -%}
+      {%- do triples.append([node, "fip:declared-by", "<" ~ communityUri[0] ~ ">"]) -%}
+    {%- endif -%}
+    {#- Community making the declaration -#}
+    {%- set considerationsPath = [declarationPath, q["consideration"]]|reply_path -%}
+    {%- set considerations = replies[considerationsPath]|reply_str_value -%}
+    {%- do triples.append([node, "fip:considerations", considerations|tojson]) -%}
+    {#- Current: Nanobench -#}
+    {%- if q["type"] == "nanobench" -%}
+      {%- set cnanobenchReply = replies[[declarationPath, q["c_nanobench"]]|reply_path]-%}
+      {%- if cnanobenchReply -%}
+        {%- set reply = cnanobenchReply.value -%}
+        {%- set question = km.entities.questions[q["c_nanobench"]] -%}
+        {%- if reply.type == "PlainValue" and reply.value -%}
+          {%- do triples.append([node, "fip:declares-current-use-of", "<" ~ reply.value ~ ">"]) -%}
+        {%- elif reply.id -%}
+          {%- set integration = km.entities.integrations[question.integrationUuid] -%}
+          {%- set url = integration.itemUrl|replace("${id}", reply.id) -%}
+          {%- do triples.append([node, "fip:declares-current-use-of", "<" ~ url ~ ">"]) -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endif -%}
+    {#- Current: Options -#}
+    {%- if q["type"] == "options" -%}
+      {%- set coptionsAnswerUuid = replies[[declarationPath, q["c_options"]]|reply_path]|reply_str_value -%}
+      {%- if coptionsAnswerUuid -%}
+        {%- set answer = km.entities.answers[coptionsAnswerUuid] -%}
+        {%- set answerValue = answer.label -%}
+        {%- do triples.append([node, "fip:declares-current-use-of", "<" ~ answerValue ~ ">"]) -%}
+      {%- endif -%}
+    {%- endif -%}
+    {#- Planned (fip:declares-planned-use-of) -#}
+    {%- set plannedsPath = [declarationPath, q["planning"]]|reply_path -%}
+    {%- set planneds = replies[plannedsPath]|reply_items -%}
+    {%- for plannedUuid in planneds -%}
+      {%- set plannedPath = [plannedsPath, plannedUuid]|reply_path -%}
+      {#- Planned: Nanobench -#}
+      {%- if q["type"] == "nanobench" -%}
+        {%- set pnanobenchReply = replies[[plannedPath, q["p_nanobench"]]|reply_path]-%}
+        {%- if pnanobenchReply -%}
+          {%- set reply = pnanobenchReply.value -%}
+          {%- set question = km.entities.questions[q["p_nanobench"]] -%}
+          {%- if reply.type == "PlainValue" and reply.value -%}
+            {%- do triples.append([node, "fip:declares-planned-use-of", "<" ~ reply.value ~ ">"]) -%}
+          {%- elif reply.id -%}
+            {%- set integration = km.entities.integrations[question.integrationUuid] -%}
+            {%- set url = integration.itemUrl|replace("${id}", reply.id) -%}
+            {%- do triples.append([node, "fip:declares-planned-use-of", "<" ~ url ~ ">"]) -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endif -%}
+      {#- Planned: Options -#}
+      {%- if q["type"] == "options" -%}
+        {%- set poptionsAnswerUuid = replies[[plannedPath, q["p_options"]]|reply_path]|reply_str_value -%}
+        {%- if poptionsAnswerUuid -%}
+          {%- set answer = km.entities.answers[poptionsAnswerUuid] -%}
+          {%- set answerValue = answer.label -%}
+          {%- do triples.append([node, "fip:declares-planned-use-of", "<" ~ answerValue ~ ">"]) -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+
+    {%- set declaration = {
+      "uuid": declarationUuid,
+      "triples": triples
+    } -%}
+    {%- do declarations.append(declaration) -%}
+  {%- endfor -%}
+{%- endfor -%}

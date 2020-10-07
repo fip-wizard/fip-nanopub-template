@@ -1,0 +1,45 @@
+{
+  "id": "gofair:fip-nanopub:1.0.0",
+  "organizationId": "gofair",
+  "templateId": "fip-nanopub",
+  "version": "1.0.0",
+  "name": "FIP Nanopub",
+  "description": "FAIR Implementation Profile as Nanopublications",
+  "readme": "# FIP Nanopublication (RDF) template\n\nExport template that transforms FIP questionnaire into a set of nanopublications (one per declaration).\n\n## Changelog\n\n### 1.0.0\n\n- Initial version of FIP nanopublication export template\n",
+  "recommendedPackageId": "gofair:fip-wizard:4.3.2",
+  "license": "Apache-2.0",
+  "metamodelVersion": 2,
+  "allowedPackages": [
+    {
+      "orgId": "gofair",
+      "kmId": "fip-wizard",
+      "minVersion": "4.3.0",
+      "maxVersion": null
+    },
+    {
+      "orgId": "gofair",
+      "kmId": "FIPV1",
+      "minVersion": "1.0.0",
+      "maxVersion": null
+    }
+  ],
+  "formats": [
+    {
+      "uuid": "9c7d572e-c273-4323-97a4-ab38f943c33a",
+      "name": "TriG (RDF)",
+      "shortName": "trig",
+      "icon": "fas fa-share-alt",
+      "color": "#f15a24",
+      "steps": [
+        {
+          "name": "jinja",
+          "options": {
+            "template": "content/nanopub.trig.j2",
+            "content-type": "application/trig",
+            "extension": "trig"
+          }
+        }
+      ]
+    }
+  ]
+}

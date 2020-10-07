@@ -1,0 +1,62 @@
+{%- import "content/_triples.j2" as triples with context -%}
+# This file contains declarations from FIP Questionnaire {{ ctx.questionnaireUuid }} as nanopubs
+#
+# Delete all previous data related to this FIP questionnaire
+#> pre-query: DELETE { GRAPH ?g { ?s ?p ?o } } WHERE { GRAPH ?g { ?s ?p ?o } FILTER REGEX(?g, "^http://purl.org/nanopub/temp/fip-declaration-np/{{ ctx.questionnaireUuid }}/") } ;
+
+{% for declaration in triples.declarations -%}
+{%- set declarationUuid = declaration["uuid"] -%}
+{%- set xtriples = declaration["triples"] %}
+# Declaration #{{loop.index}} ({{declarationUuid}})
+@prefix : <http://purl.org/nanopub/temp/fip-declaration-np/{{ ctx.questionnaireUuid }}/{{ ctx.uuid }}/{{ declarationUuid }}#> .
+@prefix fip: <https://w3id.org/fair/fip/terms/> .
+@prefix fair: <https://w3id.org/fair/principles/terms/> .
+@prefix np: <http://www.nanopub.org/nschema#> .
+@prefix npx: <http://purl.org/nanopub/x/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix orcid: <https://orcid.org/> .
+
+:Head {
+  : a np:Nanopublication;
+    np:hasAssertion :assertion ;
+    np:hasProvenance :provenance ;
+    np:hasPublicationInfo :pubinfo .
+}
+
+:assertion {
+{%- for triple in xtriples %}
+  {%- if triple|length == 3 %}
+  {{ triple[0] }} {{ triple[1] }} {{ triple[2] }} .
+  {%- elif triple|length == 1 %}
+  # {{ triple[0] }}
+  {%- else %}
+  #================================================
+  {%- endif %}
+{%- endfor %}
+}
+
+:provenance {
+  {%- if triples.orcid %}
+  {%- set orcid = triples.orcid|replace("https://orcid.org/", "")|replace("http://orcid.org/", "") %}
+  {%- if orcid.split('-')|length == 4 %}
+  :assertion dct:creator orcid:{{ orcid }} .
+  {%- else %}
+  :assertion dct:creator {{ orcid|tojson }} .
+  {%- endif %}
+  {%- else %}
+  :assertion dct:creator "unknown" .
+  {%- endif %}
+}
+
+:pubinfo {
+  : dct:created "{{ ctx.updatedAt|datetime_format("%Y-%m-%dT%H:%M:%SZ") }}"^^xsd:dateTime ;
+    dct:creator <{{ ctx.config.clientUrl }}> ;
+    dct:license <https://creativecommons.org/publicdomain/zero/1.0/> .
+}
+
+{% endfor -%}
