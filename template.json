@@ -1,25 +1,19 @@
 {
-  "id": "gofair:fip-nanopub:1.0.0",
+  "id": "gofair:fip-nanopub:1.1.0",
   "organizationId": "gofair",
   "templateId": "fip-nanopub",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "name": "FIP Nanopub",
   "description": "FAIR Implementation Profile as Nanopublications",
-  "readme": "# FIP Nanopublication (RDF) template\n\nExport template that transforms FIP questionnaire into a set of nanopublications (one per declaration).\n\n## Changelog\n\n### 1.0.0\n\n- Initial version of FIP nanopublication export template\n",
-  "recommendedPackageId": "gofair:fip-wizard:4.3.2",
+  "readme": "# FIP Nanopublication (RDF) template\n\nExport template that transforms FIP questionnaire into a set of nanopublications (one per declaration).\n\n## Changelog\n\n### 1.1.0\n\n- Update for KM v5 (with Wikidata questions)\n\n### 1.0.0\n\n- Initial version of FIP nanopublication export template\n",
+  "recommendedPackageId": "gofair:fip-wizard:5.0.4",
   "license": "Apache-2.0",
   "metamodelVersion": 2,
   "allowedPackages": [
     {
       "orgId": "gofair",
       "kmId": "fip-wizard",
-      "minVersion": "4.3.0",
-      "maxVersion": null
-    },
-    {
-      "orgId": "gofair",
-      "kmId": "FIPV1",
-      "minVersion": "1.0.0",
+      "minVersion": "5.0.3",
       "maxVersion": null
     }
   ],
