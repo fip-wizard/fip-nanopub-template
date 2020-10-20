@@ -74,12 +74,24 @@
     {%- if q["type"] == "licenses" -%}
       {%- set coptionsAnswerUuid = replies[[declarationPath, q["c_options"]]|reply_path]|reply_str_value -%}
       {%- set curiAnswer = replies[[declarationPath, q["c_uri"]]|reply_path]|reply_str_value -%}
+      {%- set cnanobenchReply = replies[[declarationPath, q["c_nanobench"]]|reply_path]-%}
       {%- if coptionsAnswerUuid -%}
         {%- set answer = km.entities.answers[coptionsAnswerUuid] -%}
         {%- set answerValue = answer.label -%}
         {%- do triples.append([node, "fip:declares-current-use-of", "<" ~ answerValue ~ ">"]) -%}
       {%- elif curiAnswer -%}
         {%- do triples.append([node, "fip:declares-current-use-of", "<" ~ curiAnswer ~ ">"]) -%}
+      {%- elif cnanobenchReply -%}
+        {%- set reply = cnanobenchReply.value -%}
+        {%- set question = km.entities.questions[q["c_nanobench"]] -%}
+        {%- if reply.type == "PlainValue" and reply.value -%}
+          {%- do triples.append([node, "fip:declares-current-use-of", "<" ~ reply.value ~ ">"]) -%}
+        {%- elif reply.id -%}
+          {%- set integration = km.entities.integrations[question.integrationUuid] -%}
+          {%- set url = integration.itemUrl|replace("${id}", reply.id) -%}
+          {%- do triples.append([node, "fip:declares-current-use-of", "<" ~ url ~ ">"]) -%}
+          {%- do triples.append(["<" ~ url ~ ">", "rdfs:label", reply.value|tojson]) -%}
+        {%- endif -%}
       {%- endif -%}
     {%- endif -%}
     {#- Planned (fip:declares-planned-use-of) -#}
@@ -120,12 +132,24 @@
       {%- if q["type"] == "licenses" -%}
         {%- set poptionsAnswerUuid = replies[[plannedPath, q["p_options"]]|reply_path]|reply_str_value -%}
         {%- set puriAnswer = replies[[plannedPath, q["p_uri"]]|reply_path]|reply_str_value -%}
+        {%- set pnanobenchReply = replies[[plannedPath, q["p_nanobench"]]|reply_path]-%}
         {%- if poptionsAnswerUuid -%}
           {%- set answer = km.entities.answers[poptionsAnswerUuid] -%}
           {%- set answerValue = answer.label -%}
           {%- do triples.append([node, "fip:declares-planned-use-of", "<" ~ answerValue ~ ">"]) -%}
         {%- elif puriAnswer -%}
           {%- do triples.append([node, "fip:declares-planned-use-of", "<" ~ puriAnswer ~ ">"]) -%}
+        {%- elif pnanobenchReply -%}
+          {%- set reply = pnanobenchReply.value -%}
+          {%- set question = km.entities.questions[q["p_nanobench"]] -%}
+          {%- if reply.type == "PlainValue" and reply.value -%}
+            {%- do triples.append([node, "fip:declares-planned-use-of", "<" ~ reply.value ~ ">"]) -%}
+          {%- elif reply.id -%}
+            {%- set integration = km.entities.integrations[question.integrationUuid] -%}
+            {%- set url = integration.itemUrl|replace("${id}", reply.id) -%}
+            {%- do triples.append([node, "fip:declares-planned-use-of", "<" ~ url ~ ">"]) -%}
+            {%- do triples.append(["<" ~ url ~ ">", "rdfs:label", reply.value|tojson]) -%}
+          {%- endif -%}
         {%- endif -%}
       {%- endif -%}
     {%- endfor -%}
