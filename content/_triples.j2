@@ -6,10 +6,10 @@
 
 {%- set communityReply = replies[def.communityPath] -%}
 {%- if communityReply -%}
-  {%- set reply = communityReply.value -%}
+  {%- set reply = communityReply.value.value -%}
   {%- set communityUri = [] -%}
   {%- set communityQuestion = km.entities.questions[def.communityUuid] -%}
-  {%- if reply.type == "PlainValue" and reply.value -%}
+  {%- if reply.type == "PlainType" and reply.value -%}
     {%- do communityUri.append(reply.value) -%}
   {%- elif reply.id -%}
     {%- set integration = km.entities.integrations[communityQuestion.integrationUuid] -%}
@@ -45,9 +45,9 @@
     {%- if q["type"] == "normal" -%}
       {%- set cwikidataReply = replies[[declarationPath, q["c_wikidata"]]|reply_path]-%}
       {%- if cwikidataReply -%}
-        {%- set reply = cwikidataReply.value -%}
+        {%- set reply = cwikidataReply.value.value -%}
         {%- set question = km.entities.questions[q["c_wikidata"]] -%}
-        {%- if reply.type == "PlainValue" and reply.value -%}
+        {%- if reply.type == "PlainType" and reply.value -%}
           {%- do triples.append([node, "fip:declares-current-use-of", "<" ~ reply.value ~ ">"]) -%}
         {%- elif reply.id -%}
           {%- set integration = km.entities.integrations[question.integrationUuid] -%}
@@ -58,9 +58,9 @@
       {%- endif -%}
       {%- set cnanobenchReply = replies[[declarationPath, q["c_nanobench"]]|reply_path]-%}
       {%- if cnanobenchReply -%}
-        {%- set reply = cnanobenchReply.value -%}
+        {%- set reply = cnanobenchReply.value.value -%}
         {%- set question = km.entities.questions[q["c_nanobench"]] -%}
-        {%- if reply.type == "PlainValue" and reply.value -%}
+        {%- if reply.type == "PlainType" and reply.value -%}
           {%- do triples.append([node, "fip:declares-current-use-of", "<" ~ reply.value ~ ">"]) -%}
         {%- elif reply.id -%}
           {%- set integration = km.entities.integrations[question.integrationUuid] -%}
@@ -82,9 +82,9 @@
       {%- elif curiAnswer -%}
         {%- do triples.append([node, "fip:declares-current-use-of", "<" ~ curiAnswer ~ ">"]) -%}
       {%- elif cnanobenchReply -%}
-        {%- set reply = cnanobenchReply.value -%}
+        {%- set reply = cnanobenchReply.value.value -%}
         {%- set question = km.entities.questions[q["c_nanobench"]] -%}
-        {%- if reply.type == "PlainValue" and reply.value -%}
+        {%- if reply.type == "PlainType" and reply.value -%}
           {%- do triples.append([node, "fip:declares-current-use-of", "<" ~ reply.value ~ ">"]) -%}
         {%- elif reply.id -%}
           {%- set integration = km.entities.integrations[question.integrationUuid] -%}
@@ -103,9 +103,9 @@
       {%- if q["type"] == "normal" -%}
         {%- set pwikidataReply = replies[[plannedPath, q["p_wikidata"]]|reply_path]-%}
         {%- if pwikidataReply -%}
-          {%- set reply = pwikidataReply.value -%}
+          {%- set reply = pwikidataReply.value.value -%}
           {%- set question = km.entities.questions[q["p_wikidata"]] -%}
-          {%- if reply.type == "PlainValue" and reply.value -%}
+          {%- if reply.type == "PlainType" and reply.value -%}
             {%- do triples.append([node, "fip:declares-planned-use-of", "<" ~ reply.value ~ ">"]) -%}
           {%- elif reply.id -%}
             {%- set integration = km.entities.integrations[question.integrationUuid] -%}
@@ -116,9 +116,9 @@
         {%- endif -%}
         {%- set pnanobenchReply = replies[[plannedPath, q["p_nanobench"]]|reply_path]-%}
         {%- if pnanobenchReply -%}
-          {%- set reply = pnanobenchReply.value -%}
+          {%- set reply = pnanobenchReply.value.value -%}
           {%- set question = km.entities.questions[q["p_nanobench"]] -%}
-          {%- if reply.type == "PlainValue" and reply.value -%}
+          {%- if reply.type == "PlainType" and reply.value -%}
             {%- do triples.append([node, "fip:declares-planned-use-of", "<" ~ reply.value ~ ">"]) -%}
           {%- elif reply.id -%}
             {%- set integration = km.entities.integrations[question.integrationUuid] -%}
@@ -140,9 +140,9 @@
         {%- elif puriAnswer -%}
           {%- do triples.append([node, "fip:declares-planned-use-of", "<" ~ puriAnswer ~ ">"]) -%}
         {%- elif pnanobenchReply -%}
-          {%- set reply = pnanobenchReply.value -%}
+          {%- set reply = pnanobenchReply.value.value -%}
           {%- set question = km.entities.questions[q["p_nanobench"]] -%}
-          {%- if reply.type == "PlainValue" and reply.value -%}
+          {%- if reply.type == "PlainType" and reply.value -%}
             {%- do triples.append([node, "fip:declares-planned-use-of", "<" ~ reply.value ~ ">"]) -%}
           {%- elif reply.id -%}
             {%- set integration = km.entities.integrations[question.integrationUuid] -%}

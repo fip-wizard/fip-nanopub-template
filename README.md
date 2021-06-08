@@ -4,6 +4,10 @@ Export template that transforms FIP questionnaire into a set of nanopublications
 
 ## Changelog
 
+### 1.3.0
+
+- Update to metamodel v3
+
 ### 1.2.0
 
 - Fix A-related question URIs
