@@ -1,12 +1,12 @@
 {
   "organizationId": "gofair",
   "templateId": "fip-nanopub",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "name": "FIP Nanopub",
   "description": "FAIR Implementation Profile as Nanopublications",
   "recommendedPackageId": "gofair:fip-wizard:5.0.8",
   "license": "Apache-2.0",
-  "metamodelVersion": 4,
+  "metamodelVersion": 5,
   "allowedPackages": [
     {
       "orgId": "gofair",
